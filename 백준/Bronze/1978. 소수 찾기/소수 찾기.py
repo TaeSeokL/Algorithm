@@ -1,3 +1,4 @@
+
 def sosu():
     cnt = 0
     for x in arr:
@@ -11,12 +12,15 @@ def sosu():
                 cnt += 1
                 break
             # 소수가 아닐경우
-            if x % v == 0:
+            elif x % v == 0:
                 break
             v += 1
-            
+
     return cnt
 if __name__=='__main__':
     n = int(input()) # 주어진 숫자 갯수
     arr= list(map(int,input().split())) # 주어진 숫자
     print(sosu())
+
+
+
