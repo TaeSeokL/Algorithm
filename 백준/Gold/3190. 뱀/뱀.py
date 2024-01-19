@@ -1,6 +1,5 @@
 from collections import deque
 
-
 def move():
     global ny,nx
     global ndir
@@ -15,7 +14,6 @@ def move():
     if arr[ny][nx] == -1 or arr[ny][nx] == 1:
         print(count+1)
         exit(0)
-
 
     # 새로운 위치가 사과일 경우
     if arr[ny][nx] == 2 :
@@ -76,7 +74,6 @@ if __name__=='__main__':
         # 계속 while 문을 돌아준다.
         s, d = input().split()
         rotate.append((s, d))
-
 
     while True:
         if rotate_num < L :
