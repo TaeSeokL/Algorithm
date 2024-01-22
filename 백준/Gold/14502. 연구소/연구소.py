@@ -44,8 +44,8 @@ def calculate_warningzone(board):
             if board[i][j] == 2:
                 warning += 1
 
-                if warning > warning_area:
-                    return
+                # if warning > warning_area:
+                #     return
 
     # 만약 반복문이 끝났다는 건 위험지역최소넓이보다 현재 보드에서 위험지역 넓이가 작다는 뜻이된다.
     # 그럴 경우 최소값을 갱신해주고, 다시 반복문을 돌면서 안전지역의 최대값도 갱신해준다.
