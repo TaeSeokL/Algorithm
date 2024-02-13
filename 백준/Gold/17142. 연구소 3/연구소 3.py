@@ -28,27 +28,20 @@ def bfs(active_virus):
             if 0<=ny<n and 0<=nx<n:
                 # 만약 다음 위치가 빈칸이거나, 현재 탐색 시간이 원래 저장되어잇는 탐색 시간보다 작을때
                 # 탐색을 해야함 => 큐에 추카 후 탐색시간 갱신, 방문체크
+                # *추가로 여기서 방문여부를 확인 안하는 것은 빈칸일 경우
+                # 방문여부와 관계없이 더 적은 탐색시간을 저장하는 로직이기 때문이다.
+                # 따라서 방문배열의 경우 비활성 바이러스들이 여러개 겹쳐있을때
+                # 무한루프에 빠지는 것을 방지하기 위한 것이다.
                 if test_board[ny][nx] == 0 or test_board[ny][nx] > L+1:
                     dq.append((ny,nx,L+1))
                     test_board[ny][nx] = L + 1
                     check_board[ny][nx] = 1
 
-                # 비활성 바이러스를 발견했을때, 그 즉시 네방향 탐색
-                # 다음 위치가 빈칸이거나 현재 탐색 레벨이 기존 탐색 레벨보다 작을때 탐색
-                # 이 경우에는 비활성바이러스가 활성 바이러스가 되는 시간도 포함해줘야해서 L+2를 전달한다.
-                # 비활성 바이러스를 탐색 큐에 추가안하고 이렇게 하는 이유는
-                # 비활성 바이러스는 기본적으로 빈칸 취급이 아니기 때문에 탐색시간을 저장해버리면 안되기 때문.
-                # 하지만 비활성 바이러스 근처에 탐색가능한곳이 있을때는 L+2초를 해줘야함!
+                # 비활성 바이러스를 발견했을때, 테스트보드의 값은 업데이트하지않고
+                # 방문체크하고 탐색배열에만 추가해준다. = 무한루프 방지
                 elif test_board[ny][nx] == -1 and check_board[ny][nx] == 0:
                     check_board[ny][nx] = 1
                     dq.append((ny,nx,L+1))
-                    # for j in range(4):
-                    #     nny, nnx = ny + dir[j][0], nx + dir[j][1]
-                    #     if 0 <= nny < n and 0 <= nnx < n:
-                    #         if test_board[nny][nnx] == 0 :
-                    #             dq.append((nny,nnx,L+2))
-                    #             test_board[nny][nnx] = L + 2
-                    #         elif test_board[nny][nnx] > L
 
 def dfs(L,S):
     global min_val
@@ -117,5 +110,3 @@ if __name__=='__main__':
         print(min_val)
     else:
         print(-1)
-
-
