@@ -1,3 +1,5 @@
+# 이거 시간 오래걸림. 리팩토링해야함.
+
 from collections import deque
 # 상어 움직이고 겹치면 삭제하는 함수
 def shark_moving():
@@ -42,17 +44,13 @@ def shark_moving():
                     shark[dead_shark] = []
 
 def smell(sec):
-    # 원래 있던 냄새들 -1초 처리
+    # 원래 있던 냄새들 초 다 됐으면 처리, 원래 큐에 pop, append하며 t를 -1씩 해서 계산했지만
+    #그렇게 하니까 시간초과가 남. 그래서 sec + k 를 t로 받아서 이게 현재 sec이랑 같아지면 그걸 제거해줌.
+    # ex) 1초에 k=6인 냄새 남기면 7초에 0되서 없어져야함.
     L = 0
     length = len(shark_smell)
     while (L != length):
         y,x,t,num = shark_smell.popleft()
-        # t -= 1
-        # if t == 0:
-        #     smell_board[y][x] = 0
-        # else:
-        #     smell_board[y][x] = num
-        #     shark_smell.append([y,x,t,num])
         if t == sec:
             smell_board[y][x] = 0
         else:
@@ -69,28 +67,29 @@ def smell(sec):
 
 if __name__=='__main__':
     n, m, k = map(int,input().split())              # n 맵크기, m 상어 수, k 냄새턴
-
     # shark : 상어 위치와 방향관리배열 [y,x,d]
     # shark_board : 맵 상에 상어 표시 3차원 배열
     # smell_board : 상어가 뿌린 냄새표현 [상어번호,k]
     shark = [0]*(m+1)
     shark_board = [[[] for _ in range(n)] for _ in range(n)]
+    smell_board = [[0] * n for _ in range(n)]
+    shark_smell = deque()
+    dd = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+
+    # 상어보드에 상어 넣기
     for i in range(n):
         arr = list(map(int,input().split()))
         for j in range(n):
             if arr[j] !=0:
                 shark_board[i][j] = [arr[j]]
 
-    smell_board = [[0]*n for _ in range(n)]
-    shark_smell = deque()
-    dd = [(-1,0),(1,0),(0,-1),(0,1)]
-
+    # 상어 배열에 상어 위치 표시
     for i in range(n):
         for j in range(n):
             if len(shark_board[i][j]) != 0:
                 shark[shark_board[i][j][0]] = [i,j]
 
-    # init_d : 상어 초기 방향, 입력받고 shark에 방향 추가
+    # init_d : 상어 초기 방향, 입력받고 상어 배열에 방향 추가
     init_d = list(map(int,input().split()))
     for i in range(m):
         shark[i+1] += [init_d[i]-1]
@@ -105,7 +104,8 @@ if __name__=='__main__':
             for z in range(len(arr)):
                 arr[z] -= 1
             direction[i].append(arr)
-
+    
+    # 처음에 냄새한번씩 뿌려야함
     smell(0)
     # print('------초기 상어 배열 상태------')
     # for x in shark_board:
@@ -139,6 +139,3 @@ if __name__=='__main__':
             exit(0)
 
     print(-1)
-
-
-
