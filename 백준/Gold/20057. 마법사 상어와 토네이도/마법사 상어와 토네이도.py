@@ -1,3 +1,16 @@
+# 이 두가지만 잘 생각해서 구현해주면된다.
+# 1. 토네이도의 위치를 갱신하는 방법
+# 토네이도 위치 갱신은 그림으로 그려서 해결했다. 문제 특성상 토네이도가 1의 길이로 2칸 이동하고
+# 2의 길이로 4칸 이동하고 3의 길이로 6칸 이동한다. 이동 도중에 분기점에서 방향을 전환해야하는데
+# 이 분기점이 전체이동거리의 절반과 전체이동거리에서 이다. 이 두 지점에서 방향을 전환해주면됨.
+# 예를 들어, 6칸 이동한다 치면 3칸 이동후 방향을 전환, 6칸 이동 후 방향을 전환이다.
+# 그리고, 전체 토네이도를 처리하지않고 마지막 행을 따로 빼서 처리해주었다. 마지막 행에서 step과 time을
+# 한번에 처리하기 까다로웠기 때문.
+
+# 2. 모래가 흩어지는 것을 어떻게 처리할 것인가
+# 우선, 상 하 좌 우 별로 모래가 흩어지는 인덱스가 전부 다르기 때문에 sand_update_idx에 저장해두고 썼다.
+# 모래는 10칸으로 흩어지므로 반복문을 0~9까지 돌아주어 모래를 처리해주었다.
+
 
 if __name__=='__main__':
 
@@ -10,25 +23,34 @@ if __name__=='__main__':
     [(1, -1), (2, 0), (1, 0), (1, 1), (0, 2), (-1, 1), (-1, 0), (-2, 0), (-1, -1),(0, 1)],
     [(1, 1), (0, 2), (0, 1), (-1, 1), (-2, 0), (-1, -1), (0, -1), (0, -2), (1, -1),(-1, 0)]]
 
-    sand_update_rate = [1,2,7,10,5,10,7,2,1]                        # 모래 비율
+    sand_update_rate = [1,2,7,10,5,10,7,2,1]                      # 모래 비율
     tornado_dir = [(0,-1),(1,0),(0,1),(-1,0)]                     # 토네이도 방향 (좌 하 우 상)
-    tornado_d = 0                                                 # 토네이도 초기 방향
+    tornado_d = 0                                                 # 토네이도 초기 방향 : 좌
     ty,tx = n//2, n//2                                            # 토네이도 초기 위치
     ans = 0                                                       # 맵밖으로 나간 모래
 
-    for step in range(1,n):
+    # 토네이도 움직임을 반복문으로 구현, step은 방향을 바꾸지 않는 길이이고, time은 한칸씩 이동하는 변수이다.
+    for step in range(1,n+1):
         for time in range(1,step*2+1):
 
+            # 다음 위치를 계산해준다.
             nty = ty + tornado_dir[tornado_d % 4][0]
             ntx = tx + tornado_dir[tornado_d % 4][1]
 
             total_sand = 0  # 업데이트된 모래 누적해주기
             ori_sand = board[nty][ntx]  # 원래모래 저장해두기
-            # 여기서 맵처리
+            # 여기서 맵처리 = 모래 처리
+            # 0~9 까지 반복하며 퍼져야될 인덱스에 모래를 퍼트려줌.
             for i in range(10):
                 if i == 9:
+                    # 마지막 알파지점에 나머지 모래를 저장해주어야한다. 따로 예외 처리를 해서 풀었다.
+                    # 기존 위치 모래 초기화
                     board[nty][ntx] = 0
+
+                    # 원래 모래 - 비율대로 퍼트린 모래 = 남은 모래
                     u_sand = ori_sand - total_sand
+
+                    # 알파 위치 얻어 주고 범위 계산 후 처리해준다.
                     dy,dx = sand_update_idx[tornado_d%4][9]
                     uy = nty + dy
                     ux = ntx + dx
@@ -43,61 +65,24 @@ if __name__=='__main__':
                 uy = nty + dy
                 ux = ntx + dx
 
-                # 업데이트 될 모래
+                # 업데이트 될 모래 = 비율대로 계산해준다. 그리고 누적해줌.
                 u_sand = ori_sand * sand_update_rate[i]//100
                 total_sand += u_sand
 
-                # 다음 위치 범위파악
+                # 업데이트 될 위치 범위를 파악한 후 처리해줌.
                 if 0<=uy<n and 0<=ux<n:
                     board[uy][ux] += u_sand
                 else:
                     ans += u_sand
 
+            # 현재 위치 업데이트
             ty, tx = nty, ntx
 
+            # 방향 업데이트 하는 부분,
             if (step*2) == time or (step) == time :
                 tornado_d += 1
 
-    # 첫번째 행 처리
-    for _ in range(n):
-        nty = ty + tornado_dir[0][0]
-        ntx = tx + tornado_dir[0][1]
-
-        total_sand = 0  # 업데이트된 모래 누적해주기
-        ori_sand = board[nty][ntx]  # 원래모래 저장해두기
-        # 여기서 맵처리
-        for i in range(10):
-            if i == 9:
-                board[nty][ntx] = 0
-                u_sand = ori_sand - total_sand
-                dy, dx = sand_update_idx[tornado_d % 4][9]
-                uy = nty + dy
-                ux = ntx + dx
-                if 0 <= uy < n and 0 <= ux < n:
-                    board[uy][ux] += u_sand
-                else:
-                    ans += u_sand
-                continue
-
-            # 모래 업데이트 할 곳 찾기
-            dy, dx = sand_update_idx[tornado_d % 4][i]
-            uy = nty + dy
-            ux = ntx + dx
-
-            # 업데이트 될 모래
-            u_sand = ori_sand * sand_update_rate[i] // 100
-            total_sand += u_sand
-
-            # 다음 위치 범위파악
-            if 0 <= uy < n and 0 <= ux < n:
-                board[uy][ux] += u_sand
-            else:
-                ans += u_sand
-
-        ty, tx = nty, ntx
-
-        if ty == 0 and tx == 0:
-            break
+            if ty == 0 and tx == 0:
+                break
 
     print(ans)
-
