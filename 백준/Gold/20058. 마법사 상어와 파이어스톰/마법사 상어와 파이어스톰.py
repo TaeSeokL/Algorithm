@@ -9,21 +9,25 @@ def ice_rotate(v):
     v = 2**v
     for r in range(0,n,v):
         for c in range(0,n,v):
-            for y in range(r,r+v):
-                for x in range(c,c+v):
-                    # 좌표계 변환
-                    oy = y - r
-                    ox = x - c
+            for y in range(v):
+                for x in range(v):
+                    next_board[y+r][x+c] = board[v-1-x+r][y+c]
+            # for y in range(r,r+v):
+            #     for x in range(c,c+v):
+            #         # 좌표계 변환
+            #         oy = y - r
+            #         ox = x - c
+            #
+            #         # 회전 구현
+            #         ry = ox
+            #         rx = v - oy - 1
+            #
+            #         # 좌표계 복구
+            #         ry += r
+            #         rx += c
+            #
+            #         next_board[ry][rx] = board[y][x]
 
-                    # 회전 구현
-                    ry = ox
-                    rx = v - oy - 1
-
-                    # 좌표계 복구
-                    ry += r
-                    rx += c
-
-                    next_board[ry][rx] = board[y][x]
 
     # 맵 갱신
     for i in range(n):
@@ -116,4 +120,23 @@ if __name__=='__main__':
 
     print(ans)
     print(max_val)
+
+
+# n = 4
+# L = 2
+# a = [[1,2,3,4],[2,3,4,5],[3,4,5,6],[4,5,6,7]]
+# new = [[0]*n for _ in range(n)]
+# for r in range(0,n,L):
+#     for c in range(0,n,L):
+#         for y in range(L):
+#             for x in range(L):
+#                 new[r+y][c+x] = a[r+L-1-x][c+y]
+#
+#
+# for x in a:
+#     print(x)
+# print()
+# for x in new:
+#     print(x)
+# print()
 
