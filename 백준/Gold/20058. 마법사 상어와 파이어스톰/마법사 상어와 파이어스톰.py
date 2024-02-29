@@ -7,11 +7,16 @@ from collections import deque
 # 회전시작점의 기준좌표가 전부 달라지기 때문에 원점으로 좌표계를 변환한 다음 회전시키고, 다시 좌표계를 복구해주는게 중요함.
 def ice_rotate(v):
     v = 2**v
+    # 새로운 풀이, 목적지 좌표 기준 부분 회전 구현법
+    # 부분 회전은 회전 시작점이 모두 다르기 때문에 (0,0) 기준 구현한 뒤 회전 시작점인 (r,c)를 각 좌표에 더해주기만 하면됨.
+    # 이 방법 아주 괜찮은거 같음. 헷갈리면 알고리즘 개념노트 p45-48 보던지 (https://youtu.be/NHoMIsPOZUE?si=knxyxAnAfDlPWDxG) 이거보기
     for r in range(0,n,v):
         for c in range(0,n,v):
             for y in range(v):
                 for x in range(v):
                     next_board[y+r][x+c] = board[v-1-x+r][y+c]
+
+            # 내풀이 (좌표계 변환 후 회전 구현)
             # for y in range(r,r+v):
             #     for x in range(c,c+v):
             #         # 좌표계 변환
@@ -27,7 +32,6 @@ def ice_rotate(v):
             #         rx += c
             #
             #         next_board[ry][rx] = board[y][x]
-
 
     # 맵 갱신
     for i in range(n):
@@ -120,23 +124,3 @@ if __name__=='__main__':
 
     print(ans)
     print(max_val)
-
-
-# n = 4
-# L = 2
-# a = [[1,2,3,4],[2,3,4,5],[3,4,5,6],[4,5,6,7]]
-# new = [[0]*n for _ in range(n)]
-# for r in range(0,n,L):
-#     for c in range(0,n,L):
-#         for y in range(L):
-#             for x in range(L):
-#                 new[r+y][c+x] = a[r+L-1-x][c+y]
-#
-#
-# for x in a:
-#     print(x)
-# print()
-# for x in new:
-#     print(x)
-# print()
-
