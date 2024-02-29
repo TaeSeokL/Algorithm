@@ -1,5 +1,10 @@
 from collections import deque
 
+# 배열 회전하는 함수
+# 전달받은 v로 회전할 정사각형의 크기를 계산해줌 = 2^v
+# 그 다음 격자 전체를 순회하는 (r,c)를 v 간격으로 반복해줌. (r,c)는 회전하는 정사각형의 좌상단 인덱스임.
+# 그 다음 (r,c)부터 회전하는 정사각형 크기만큼을 회전시켜줘야함. 여기서 중요한게 (r,c)에 따라
+# 회전시작점의 기준좌표가 전부 달라지기 때문에 원점으로 좌표계를 변환한 다음 회전시키고, 다시 좌표계를 복구해주는게 중요함.
 def ice_rotate(v):
     v = 2**v
     for r in range(0,n,v):
@@ -25,6 +30,8 @@ def ice_rotate(v):
         for j in range(n):
             board[i][j] = next_board[i][j]
 
+# 얼음 녹이는 함수
+# 격자 전체 순회하며 주변에 얼음이 3개 이상 있으면 그대로 넣어주고 없으면 -1 해서 넣어줌.
 def ice_melting():
     for i in range(n):
         for j in range(n):
@@ -49,11 +56,15 @@ def ice_melting():
         for j in range(n):
             board[i][j] = next_board[i][j]
 
+# 제일 큰 얼음 덩어리 면적 찾는 함수 = bfs
 def max_ice():
     global max_val
+    # 방문 배열과 탐색큐
     check = [[0]*n for _ in range(n)]
     dq = deque()
 
+    # 격자 전체를 순회하며 얼음이 있는 곳이 발견되면 탐색큐에 넣은 뒤, 방문체크해주고,
+    # 그 위치를 기준으로 상하좌우로 뻗어나가며 덩어리를 탐색한다.
     for i in range(n):
         for j in range(n):
             if check[i][j] == 0 and board[i][j] != 0:
@@ -62,26 +73,27 @@ def max_ice():
                 res = 1
                 while dq:
                     y,x = dq.popleft()
-
+                    # 상하좌우 뻗어나가다가
                     for d in range(4):
                         dy, dx = dir[d]
                         ny, nx = y + dy, x + dx
-
+                        # 범위내이고, 방문안했고, 얼음 있으면, 큐에 추가
                         if 0<=ny<n and 0<=nx<n and check[ny][nx] == 0 and board[ny][nx] != 0:
                             dq.append((ny,nx))
                             check[ny][nx] = 1
                             res += 1
 
+                # 덩어리 크기가 1이 아니고 최대값보다 크면 최대값 갱신
                 if res != 1 and res > max_val:
                     max_val = res
 
 if __name__=='__main__':
     n, q = map(int,input().split())                                 # 2**n 맵크기, q 명령갯수
     n = 2**n
-    board = [list(map(int,input().split())) for _ in range(n)]   # 맵정보
+    board = [list(map(int,input().split())) for _ in range(n)]      # 맵정보
     L = list(map(int,input().split()))                              # 명령정보
     dir = [(-1,0),(0,1),(1,0),(0,-1)]                               # 이동방향
-    next_board = [[0]*n for _ in range(n)]                  # 회전 후 맵 저장 배열
+    next_board = [[0]*n for _ in range(n)]                          # 회전 후 맵 저장 배열
 
     ans = 0         # 남아있는 얼음양
     max_val = 0     # 남아있는 얼음 덩어리 중 가장 큰 것의 면적
