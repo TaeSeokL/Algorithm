@@ -1,5 +1,3 @@
-from copy import deepcopy
-
 if __name__=='__main__':
     n, m = map(int,input().split())
     board = [list(map(int,input().split())) for _ in range(n)]
@@ -23,9 +21,10 @@ if __name__=='__main__':
             previous_cloud.append((ny,nx))
 
         # 물복사 버그 마법
+        v = [[0]*n for _ in range(n)]
         for cy, cx in previous_cloud:
             water = 0
-
+            v[cy][cx] = 1
             for d in range(4):
                 ny = cy + water_copy_bug_dir[d][0]
                 nx = cx + water_copy_bug_dir[d][1]
@@ -33,16 +32,13 @@ if __name__=='__main__':
                 if 0<=ny<n and 0<=nx<n and board[ny][nx] > 0:
                     water += 1
 
-            next_board[cy][cx] = board[cy][cx] + water
-
-        # 변경된 값 옮겨주기
-        for cy,cx in previous_cloud:
-            board[cy][cx] = next_board[cy][cx]
+            board[cy][cx] += water
 
         cloud = []
         for i in range(n):
            for j in range(n):
-               if board[i][j] >= 2 and (i,j) not in previous_cloud:
+               # if board[i][j] >= 2 and (i,j) not in previous_cloud:
+               if board[i][j] >= 2 and v[i][j] ==0 :
                    cloud.append([i,j])
                    board[i][j] -= 2
 
