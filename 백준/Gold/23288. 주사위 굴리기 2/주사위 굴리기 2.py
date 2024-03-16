@@ -1,13 +1,17 @@
 from collections import deque
+
+# 현재 위치에서 현재 방향으로 이동 가능한지 확인 후 위치와 방향 업데이트 함수
 def dir_is_possible():
     global d,y,x
 
     ny = y + dir[d][0]
     nx = x + dir[d][1]
-
+    
+    # 다음 위치가 범위 내이면 이동
     if 0<=ny<n and 0<=nx<m:
         y, x = ny, nx
         return
+    # 범위밖이면 현재 방향에 따른 방향을 다시 갱신해주고 위치 이동
     else:
         # 오른쪽일때
         if d == 1:
@@ -27,6 +31,7 @@ def dir_is_possible():
         y, x = ny, nx
         return
 
+# 주사위 관리 배열을 업데이트 해주고 정답을 갱신해주고 방향 재조정 해주는 함수
 def move_dice():
     global d,y,x,ans
     global dicelr, diceud
@@ -66,7 +71,7 @@ def move_dice():
         for i in range(1,5):
             dy = ay + dir[i][0]
             dx = ax + dir[i][1]
-
+            # 다음위치가 범위내이고, 방문안했고, 보드숫자와 같은 숫자면 큐에추가, 같은숫자 카운트 올려줌
             if 0<=dy<n and 0<=dx<m and check[dy][dx] == 0 and board[dy][dx] == board_num:
                 dq.append((dy,dx))
                 check[dy][dx] = 1
@@ -106,13 +111,12 @@ if __name__=='__main__':
     d = 1                        # 방향변수 오 왼 위 밑 1 2 3 4
     dicelr = deque([4,6,3,1])    # 주사위 왼오 관리배열 / 왼 밑 오 윗 0 1 2 3(인덱스)
     diceud = deque([2,6,5,1])    # 주사위 위밑 관리배열 / 뒷 밑 앞 윗 0 1 2 3
-
-    ans = 0
+    ans = 0                      # 정답변수
 
     for turn in range(k):
         # 현재 이동방향 이동 가능한지 확인
         dir_is_possible()
-        # 주사위 이동 후 점수 획득
+        # 주사위 이동 후 점수 획득 후 방향 재조정
         move_dice()
 
     print(ans)
