@@ -31,8 +31,8 @@ def move_shark():
                 # --여기까지가 4개중 3개를 뽑은 상황임--
                 # 이제부터 이 3개를 뽑은 경우의 수 중 물고기를 가장 많이 먹은 경로로 상어를 이동시켜야함.
                 # 물고기를 불러와서 경로안에 물고기가 있으면 먹은 물고기를 계산해줌.
-                shk_v = set(((r1,c1),(r2,c2),(r3,c3)))
-                f_cnt = 0
+                shk_v = set(((r1,c1),(r2,c2),(r3,c3)))      # 상어의 이동 경로
+                f_cnt = 0                                   # 경로에 따른 물고기 수
 
                 for i in range(len(fish)):
                     # 만약 물고기가 상어 이동 경로에 있으면 잡아먹은 물고기로 더해줌.
@@ -73,9 +73,9 @@ def merge(fish):
 if __name__=='__main__':
     m, s = map(int,input().split())     # m 물고기 수, s 연습횟수
 
-    fish = []
     # 물고기들을 군집으로 관리 [1] 행 [2] 열 [3] 방향 [4] 갯수
     # 같은 위치에 같은 방향을 가진 물고기들을 갯수로 관리한다.
+    fish = []
     for _ in range(m):
         r, c, d = map(int,input().split())      # (r,c) d 방향
         fish.append([r-1,c-1,d-1,1])
@@ -110,7 +110,8 @@ if __name__=='__main__':
         # 복제마법 적용 후 같은 위치 같은 방향의 물고기들 갯수 합쳐주기
         fish += copy_fish
         merge(fish)
-
+    
+    # 정답은 물고기들의 갯수만 전부 더해주면됨.
     ans = 0
     for i in range(len(fish)):
         ans += fish[i][3]
