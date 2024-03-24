@@ -9,6 +9,7 @@ if __name__=='__main__':
 
     dir = [(-1,0),(1,0),(0,1),(0,-1)]   # 상어 이동 방향 상 하 우 좌
     ans = 0                             # 낚시왕이 잡은 상어 크기 합
+
     left_right_idx = [i for i in range(C)] + [i for i in range(C-2,0,-1)]   # 좌우방향상어 위치업데이트 배열
     up_down_idx = [i for i in range(R)] + [i for i in range(R-2,0,-1)]      # 위아래방향상어 위치업데이트 배열
 
@@ -25,23 +26,26 @@ if __name__=='__main__':
                 break
 
         # [2] 상어 이동
+        # 여기서 말하는 인덱스 처리란 어차피 상어는 배열을 왔다갔다 하기 때문에 굿노트에 분석한 것처럼
+        # 계산 후에 원래 격자 크기를 넘어가는 인덱스는 우리가 만든 확장배열에 그 값을 넣어서
+        # 실제 상어의 인덱스(위치)를 찾아오는 과정을 의미함. 그리고 이때 방향도 함께 반전됨. 궁금하면 개념노트 57p보기
         for sh in range(len(shark)):
             y,x,s,d,z = shark[sh]
 
             if d == 2 or d == 3:     # 좌우 방향 상어 이동
                 x = (x+dir[d][1]*s)%(2*C-2)
 
-                if x >= C:       # C보다 크면 방향 반대
+                if x >= C:           # C보다 크면 방향 반대 처리, 인덱스 처리
                     x = left_right_idx[x]
                     if d == 2 :
                         d = 3
                     else:
                         d = 2
 
-            elif d == 0 or d == 1:
+            elif d == 0 or d == 1:  # 상하 방향 상어 이동
                 y = (y+dir[d][0]*s)%(2*R-2)
 
-                if y >= R:
+                if y >= R:          # R보다 크면 방향 반대 처리, 인덱스 처리
                     y = up_down_idx[y]
 
                     if d == 0:
