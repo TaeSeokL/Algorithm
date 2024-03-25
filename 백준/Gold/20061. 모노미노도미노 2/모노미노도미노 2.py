@@ -1,39 +1,53 @@
+# 초록보드와 파란보드를 나눠서 구현했으므로 로직은 동일하다 그러므로 주석은 초록보드처리코드에만 달겠다.
+
+# 블럭을 쌓는 함수
 def green(t,y,x):
     # 쌓을 곳을 찾는 변수
     pgy = 5
+
+    # 1x1 블럭이 들어 왔을때, 입력받은 위치(x)는 유지하고 y만 바꾸면서 놓을 수 있는 위치를 찾는다.
+    # 중간에 블럭을 발견하면 바로 그 전 위치로 변수를 갱신해준다.
     if t == 1:
         for gy in range(5,-1,-1):
             if green_board[gy][x] == 1:
                 pgy = gy - 1
         green_board[pgy][x] = 1
+    # 1x2 블럭이 들어 왔을때, y만 바꾸면서 입력받은 위치(x, x+1)는 유지하며 놓을 수 있는 위치를 찾는다.
+    # 중간에 블럭을 발견하면 바로 그 전 위치로 변수 갱신
     elif t == 2:
         for gy in range(5,-1,-1):
             if green_board[gy][x] == 1 or green_board[gy][x+1] == 1:
                 pgy = gy - 1
         green_board[pgy][x], green_board[pgy][x + 1] = 1, 1
+    # 2x1 블럭이 들어 왔을때, 동일
     else:
         for gy in range(5,-1,-1):
             if green_board[gy][x] == 1:
                 pgy = gy - 1
         green_board[pgy][x], green_board[pgy-1][x] = 1,1
 
+# 점수를 내는 함수
 def green_score():
     global ans
+    # 탐색 변수를 제일 마지막 행으로 설정해둔다.
     gy = 5
     while gy > 0 :
-        # 현재 보고 있는 행이 전부 1일때
+        # 현재 보고 있는 행이 전부 1일때, 정답 +1, 전부 0으로 만들어줌.
         if green_board[gy][0] == 1 and green_board[gy][1] == 1 and green_board[gy][2] == 1 and green_board[gy][3] == 1:
             ans += 1
             green_board[gy][0],green_board[gy][1],green_board[gy][2],green_board[gy][3] = 0,0,0,0
 
+            # 그리고 그 즉시 그 위에 행들을 한칸씩 전부 내려준다. 점수가 낸 행부터 0행까지 한행씩 내려주기
             for ggy in range(gy,0,-1):
                 for gx in range(4):
                     green_board[ggy][gx], green_board[ggy-1][gx] = green_board[ggy-1][gx], green_board[ggy][gx]
+        # 정답이 아닐때는 그 위의 행을 검사하기 위해 -1해줌.
         else:
             gy -= 1
 
+# 금지 영역에 있는 블록을 처리하는 함수
 def green_forbidden():
-    # 몇 행 없애야하는지 파악
+    # 몇 행 없애야하는지 파악. 금지 영역에 몇개의 블록이 있는지 확인. 최대 2
     cnt = 0
     for gy in range(2):
         for gx in range(4):
@@ -41,11 +55,12 @@ def green_forbidden():
                 cnt += 1
                 break
 
-    # 행 없애주기
+    # 행 없애주기, 인덱싱 기법으로 없애준다. list[-1], list[-2] 이런식으로 제일 마지막꺼를 지워줄 수 있다.
     for dd in range(1,cnt+1):
         green_board[-dd][0], green_board[-dd][1],green_board[-dd][2],green_board[-dd][3] = 0,0,0,0
 
-    # 행 채워주기
+    # 행 채워주기. cnt에 따라 채워야하는 간격이 달라진다. cnt = 1이면 간격을 1 두고 스왑해야하고 2이면 간격 2 두고 스왑해야한다.
+    # 범위는 문제 분석하다보니 나왔음. 5부터 cnt가 1일때는 1행까지봐야함. 2일때는 2행까지 봐야하니까 cnt -1 까지 반복문 돌아줌.
     for gy in range(5,cnt-1,-1):
         for gx in range(4):
             green_board[gy][gx], green_board[gy-cnt][gx] = green_board[gy-cnt][gx],green_board[gy][gx]
