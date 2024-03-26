@@ -3,7 +3,7 @@ from collections import deque
 # 현재 택시 위치에서 가장 가까운 승객을 찾는다.
 # 로직 : 현재 택시위치에서 태울 수 있는 승객을 모두 pas에 저장한 뒤 다중정렬을 통해 가장 가깝고, 행과 열이 가장 적은 승객을 찾는다.
 def find_passanger():
-    global ty,tx,f
+    global ty,tx,f, flag
 
     dq = deque()                            # 탐색큐
     check = [[0]*n for _ in range(n)]       # 방문배열
@@ -36,6 +36,7 @@ def find_passanger():
                 board[y][x] = 0                                     # 승객 태우기
                 f -= df                                             # 연료 업뎃
                 ty,tx = y,x                                         # 택시 위치 업뎃
+                flag = True                                         # 태울 수 있는 승객 있을때 -> 없으면 False 유지됨.
                 return num
     else:                                                   # 태울 수 있는 승객이 없을 경우 -> 종료
         print(-1)
@@ -103,11 +104,17 @@ if __name__=='__main__':
         end_point.append((c-1,d-1))         # 목적지 저장
 
     while True:
+        flag = False        # 태울 수 있는 승객 있는지 판단하는 변수
+
         # [1] 현재 택시 위치에서 가장 가까운 승객 찾기
         num = find_passanger()
 
-        # [2] 이 승객을 데려다주기
-        go_to_endpoint(num)
+        # [2] 태울 수 있는 승객 있을때, 이 승객을 데려다주기
+        if flag:
+            go_to_endpoint(num)
+        else:
+            print(-1)
+            exit(0)
 
         # [3] 모든 승객 델따 줬는지 확인
         for i in range(1,m+1):
