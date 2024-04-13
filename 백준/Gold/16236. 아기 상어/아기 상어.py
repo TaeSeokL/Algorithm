@@ -5,61 +5,50 @@ from collections import deque
 # 이동경로 찾는 BFS
 def BFS():
     # 현재 상어 위치를 먼저 추가해놓는다.
-    dq = deque([(fy,fx)])
+    dq = deque()
+    dq.append((fy,fx,0))
 
     # 방문 체크 배열도 만들고 현재 위치 체크
-    visited = [[-1]*n for _ in range(n)]
-    visited[fy][fx] = 0
+    visited = [[0]*n for _ in range(n)]
+    visited[fy][fx] = 1
 
+    min_y,min_x,min_dis = 21,21,100000
     # 큐가 빌때까지 반복
     while dq:
         # 하나 빼서 상하좌우 네 곳 방문한다.
-        y, x = dq.popleft()
+        y, x, dis = dq.popleft()
+
+        # 물고기가 있음.
+        if 0<board[y][x]<shark_size and dis <= min_dis:
+            if y < min_y:
+                min_y, min_x, min_dis = y, x, dis
+                if x < min_x:
+                    min_y,min_x,min_dis = y,x,dis
+
         for i in range(4):
             ny, nx = y+ dy[i], x + dx[i]
             # 인덱스 범위 내이고ㅗ
             # 다음 위치의 있는 물고기가 상어 크기보다 작거나 같고, 방문 안했을때. 갈 수 있음.
-            if 0<=ny<n and 0<=nx<n:
-                if shark_size >= board[ny][nx] and visited[ny][nx] == -1 :
+            if 0<=ny<n and 0<=nx<n and visited[ny][nx] == 0 and shark_size >= board[ny][nx]:
                     # 이때 그전 방문 체크한 값의 +1로 해주어야 함.
                     # 그 위치까지 가는데 걸리는 경로 길이를 표시하는거임.
                     # 큐에 추가후 계속 탐색
-                    visited[ny][nx] = visited[y][x] + 1
-                    dq.append((ny,nx))
+                    visited[ny][nx] = 1
+                    dq.append((ny,nx,dis+1))
 
-    # 전부 탐색했으면 체크 배열 전달.
-    return visited
-
-# 먹을 물고기를 찾는 함수
-def solve(visited):
-    # 상어 최종 위치 변수와 최단거리 변수
-    y, x = 0, 0
-    min_distance = 100000000
-    # 반복문을 통해 전부 탐색한다.
-    for i in range(n):
-        for j in range(n):
-            # 이때 방문 배열 값이 -1 이면 BFS로 닿지않은곳이므로 가면안되고
-            # 물고기 크기가 1보다 크고 상어 크기보다 작아야 물고기 먹을 수 있음.
-            # 그 다음 먹을 수 있는 물고기 중에서 현재 상어 위치에서 최단 거리에 위치한 물고기를 찾아야함.
-            # min_distance 업데이트 해주면서 찾기. 상어 위치 업데이트
-            if visited[i][j] != -1 and 1<=board[i][j]<shark_size:
-                if visited[i][j] < min_distance:
-                    min_distance = visited[i][j]
-                    y, x = i, j
-
-    # 모두 체크했는데 여전히 이거면 False
-    if min_distance == 100000000:
+    if min_dis == 100000:
         return False
     else:
-        # 아니면 최종 상어 위치와 최단 거리 리턴
-        return y,x,min_distance
+        return min_y,min_x,min_dis
+
+
 
 if __name__=='__main__':
     n = int(input())                                                # 맵크기
     board = [list(map(int,input().split())) for _ in range(n)]      # 맵정보
     shark_size = 2          # 상어 초기 나이
     dy = [-1, 0, 1 ,0]      # 이동 변수
-    dx = [0, 1, 0, -1]
+    dx = [0, -1, 0, 1]
     fy, fx = 0,0            # 상어 위치 변수
     answer = 0              # 정답변수
     food = 0                # 상어가 물고기 몇마리 먹은지 체크하는 변수
@@ -73,9 +62,8 @@ if __name__=='__main__':
 
     # 무한루프
     while True:
-        # BFS를 통해 갈 수 있는 위치를 전부 표시한 Visited 배열을 만든다.
         # 그걸 solve 함수로 전달해서 갈 수 있는 곳중 최단거리를 이동하면서 물고기를 잡아먹는다.
-        result = solve(BFS())
+        result = BFS()
 
         # 만약 결과가 False면 잡아먹을 물고기가 없다는 뜻 == 갈 곳이 없단 뜻
         # 종료
