@@ -18,6 +18,9 @@ def BFS():
         # 하나 빼서 상하좌우 네 곳 방문한다.
         y, x, dis = dq.popleft()
 
+        if dis > min_dis :
+            break
+
         # 물고기가 있음.
         if 0<board[y][x]<shark_size and dis <= min_dis:
             if y < min_y:
