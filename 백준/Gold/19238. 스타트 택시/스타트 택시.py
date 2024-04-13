@@ -30,14 +30,14 @@ def find_passanger():
                 check[ny][nx] = 1
 
     if pas:                                                 # 만약 태울 수 있는 승객이 있을 경우
-        pas.sort(key=lambda x:(x[3],x[0],x[1]))                 # 연료, 행, 열 순으로 다중 정렬
-        for y,x,num,df in pas:                                  # 하나씩 꺼내기
-            if df <= f:                                         # 연료가 충분한지 확인하기
-                board[y][x] = 0                                     # 승객 태우기
-                f -= df                                             # 연료 업뎃
-                ty,tx = y,x                                         # 택시 위치 업뎃
-                flag = True                                         # 태울 수 있는 승객 있을때 -> 없으면 False 유지됨.
-                return num
+        pas.sort(key=lambda x:(x[3],x[0],x[1]))             # 연료, 행, 열 순으로 다중 정렬
+        y,x,num,df = pas[0]                                 # 하나씩 꺼내기
+        if df <= f:                                         # 연료가 충분한지 확인하기
+            board[y][x] = 0                                     # 승객 태우기
+            f -= df                                             # 연료 업뎃
+            ty,tx = y,x                                         # 택시 위치 업뎃
+            flag = True                                         # 태울 수 있는 승객 있을때 -> 없으면 False 유지됨.
+            return num
     else:                                                   # 태울 수 있는 승객이 없을 경우 -> 종료
         print(-1)
         exit(0)
